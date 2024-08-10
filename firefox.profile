@@ -1,11 +1,14 @@
-# Put in /sandbox/firefox.profile
+# Place file at /sandbox/firefox.profile
 # The goal for this profile is to create a very secure but yet usable firefox sandbox.
-# Firefox can only read files out of and save files to ~/Downloads directory. If you need to upload something you have to move it to the downloads directory.
-# Blocks ssh keys from being read/stolen which has been a problem before and gernal homespace.
+# Firefox can only read or save files to ~/Downloads directory. If you need to upload something 
+#   you have to move it to the downloads directory. This protects your files from being read or 
+#   stolen without your relative knowledge.
+# Blocks ssh keys from being read/stolen which has been a problem before and general homespace.
+#
+# Written by StormTheory in July2024
+# Uploaded to github in Aug2024
 #
 #
-# Firejail profile for firefox
-# Description: Safe and easy web browser from Mozilla
 # This file is overwritten after every install/update
 # Persistent local customizations
 include firefox.local
@@ -38,7 +41,7 @@ noroot
 nonewprivs
 notv
 nodvd
-######################################### END ##########################
+###################################### END #########################################
 
 noblacklist ${HOME}/.cache/mozilla
 noblacklist ${HOME}/.mozilla
