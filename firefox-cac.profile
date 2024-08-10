@@ -1,7 +1,12 @@
-# Put in /sandbox/firefox.profile
+# Place file at /sandbox/firefox-cac.profile
 # The goal for this profile is to create a very secure but yet usable firefox sandbox.
-# Firefox can only read files out of and save files to ~/Downloads directory. If you need to upload something you have to move it to the downloads directory.
-# Blocks ssh keys from being read/stolen which has been a problem before and gernal homespace.
+# Firefox can only read or save files to ~/Downloads directory. If you need to upload something 
+#   you have to move it to the downloads directory. This protects your files from being read or 
+#   stolen without your relative knowledge.
+# Blocks ssh keys from being read/stolen which has been a problem before and general homespace.
+#
+# This profile has added noblacklists for pkcs11 and coolkey allowing for CAC/Smartcard readers to work.
+#   Refer to CAC_READER.txt as to how to install drivers to use CAC/Smartcard readers.
 #
 # Written by StormTheory in July2024
 # Uploaded to github in Aug2024
@@ -37,7 +42,6 @@ noblacklist /usr/lib64/pkcs11
 #read-only ${HOME}/Documents
 blacklist /opt
 blacklist /root
-blacklist /Linux_Safe
 blacklist /media
 blacklist /run/media
 blacklist /boot
