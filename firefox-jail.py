@@ -9,7 +9,7 @@
 # The firefox-bash is the orginal 'firefox' command script that comes with the firefox package from mozilla. This is moved to /sandbox and renamed from /usr/bin/firefox.
 # The CLI command firefox which is found in /usr/bin/firefox is softlink'd to /sandbox/firefox-jail.py
 
-# Please note that the use of --nodbus will break the joining of two firefox seesions and you will get: "Firefox is already running, but is not responding."
+# Please note that the use of --nodbus will break the joining of two firefox sessions and you will get: "Firefox is already running, but is not responding."
 
 # Files required:
 ## /sandbox/firefox-bash
@@ -66,6 +66,7 @@ if os.geteuid() == 0:
 parser = argparse.ArgumentParser()
 parser.add_argument("-v", "--version", action='store_true', help='Version information for firejail and firefox')
 parser.add_argument("-u", "--unbox", action='store_true', help='Run firefox without a sandbox')
+parser.add_argument("-l", "--list", action='store_true', help='Run firejail command to list sandboxes')
 parser.add_argument("--cac", action='store_true', help='Run firefox to allow for CAC Readers in a sandbox')
 parser.add_argument("--new-window", help='Firefox command to open in new window')
 parser.add_argument("--new-tab", help='Firefox command to open in new tab')
@@ -84,11 +85,15 @@ def SECURE(address):
     else:
         subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --include=' + PROFILE + ' ' + FIREFOX_BASH + ' ' + address], shell=True)
 
-
 #### VERSION INFO
 if args.version:
     subprocess.run(["{} --version".format(FIREFOX_BIN)], shell=True)
     subprocess.run(["firejail --version"], shell=True)
+    sys.exit()
+
+#### List Sandboxes
+if args.list:
+    subprocess.run(["firejail --list"], shell=True)
     sys.exit()
 
 
