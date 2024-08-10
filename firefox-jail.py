@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-# Written by stormtheory in July2024
-# Uploaded to github in August2024
+# Written by StormTheory in July2024
+# Uploaded to github in Aug2024
 # Wrapper for firejail for the purpose of sandboxing the Mozilla Firefox browser.
 # This wrapper allows for seemless intergration of the sandbox and your computer environment.
 # All firefox commands get intercepted by the python script and then safely ran.
@@ -16,20 +16,35 @@
 ## /sandbox/firefox-jail.py
 ## /sandbox/firefox.profile
 
+# Opional files:
+## /sandbox/firefox-cac.profile
+
+# Files and variables required:
 FIREFOX_BASH = '/sandbox/firefox-bash'
 FIREFOX_BIN = '/usr/lib/firefox/firefox'
 PROFILE = '/sandbox/firefox.profile'
-
-DEFAULT_FIREJAIL_OPTIONS = '--keep-var-tmp --disable-mnt --novideo --machine-id'
-VIDEO_FIREJAIL_OPTIONS = '--keep-var-tmp --disable-mnt'
-
 SANDBOX_NAME = 'sandyfox'
- 
+
+DEFAULT_FIREJAIL_OPTIONS = '--noroot --nodvd --keep-var-tmp --disable-mnt --novideo --noprofile --machine-id'
+
+# Opional files and variables:
+PROFILE_CAC_READER = '/sandbox/firefox-cac.profile'
+
+VIDEO_FIREJAIL_OPTIONS = '--noroot --nodvd --keep-var-tmp --disable-mnt --noprofile'
+
 import argparse
+import logging
 import subprocess
 import sys
 import os
 from os import geteuid
+
+### SET LOGGING LEVEL
+lLevel = logging.INFO     # INFO, DEBUG
+
+### LOGGER CONFIG
+logger = logging.getLogger()
+logger.setLevel(lLevel)
 
 ## COLORS
 class bcolors:
@@ -51,6 +66,7 @@ if os.geteuid() == 0:
 parser = argparse.ArgumentParser()
 parser.add_argument("-v", "--version", action='store_true', help='Version information for firejail and firefox')
 parser.add_argument("-u", "--unbox", action='store_true', help='Run firefox without a sandbox')
+parser.add_argument("--cac", action='store_true', help='Run firefox to allow for CAC Readers in a sandbox')
 parser.add_argument("--new-window", help='Firefox command to open in new window')
 parser.add_argument("--new-tab", help='Firefox command to open in new tab')
 parser.add_argument("address", nargs='?')
@@ -74,6 +90,22 @@ if args.version:
     subprocess.run(["{} --version".format(FIREFOX_BIN)], shell=True)
     subprocess.run(["firejail --version"], shell=True)
     sys.exit()
+
+
+#### CAC READER PROFILE SWITCH
+if args.cac:
+    PROFILE = PROFILE_CAC_READER
+    print (bcolors.YELLOW + 'Will load... CAC Reader Access Profile ' + PROFILE + bcolors.NC)
+
+### ERROR CHECKING
+os.path.exists(PROFILE)
+if os.path.exists(FIREFOX_BASH):
+    logging.debug(FIREFOX_BASH + ' was found')
+else:
+    print('ERROR: ' + FIREFOX_BASH + ' file was not found. Using ' + FIREFOX_BIN)
+    FIREFOX_BASH = FIREFOX_BIN
+os.path.exists(FIREFOX_BIN)
+
 
 #### NOT SANDBOX'd    
 if args.unbox:

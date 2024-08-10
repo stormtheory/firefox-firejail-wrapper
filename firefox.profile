@@ -3,9 +3,10 @@
 # Firefox can only read files out of and save files to ~/Downloads directory. If you need to upload something you have to move it to the downloads directory.
 # Blocks ssh keys from being read/stolen which has been a problem before and gernal homespace.
 #
+# Written by StormTheory in July2024
+# Uploaded to github in Aug2024
 #
-# Firejail profile for firefox
-# Description: Safe and easy web browser from Mozilla
+#
 # This file is overwritten after every install/update
 # Persistent local customizations
 include firefox.local
@@ -22,11 +23,21 @@ include globals.local
 
 
 #################### FIREFOX FIREJAIL WRAPPER PROJECT ADDED ########################
+## CAC Card Reader ##
+# Ubuntu
+noblacklist /usr/lib/firefox/libnssckbi.so
+noblacklist /usr/lib/x86_64-linux-gnu/nss
+noblacklist /usr/lib/x86_64-linux-gnu/pkcs11
+noblacklist /usr/lib/pkcs11
+# RHEL
+noblacklist /usr/lib64/pkcs11
+
 #noblacklist ${HOME}/Documents
 #whitelist ${HOME}/Documents
 #read-only ${HOME}/Documents
 blacklist /opt
 blacklist /root
+blacklist /Linux_Safe
 blacklist /media
 blacklist /run/media
 blacklist /boot
@@ -38,7 +49,7 @@ noroot
 nonewprivs
 notv
 nodvd
-######################################### END ##########################
+###################################### END #########################################
 
 noblacklist ${HOME}/.cache/mozilla
 noblacklist ${HOME}/.mozilla
@@ -91,5 +102,8 @@ dbus-user.talk org.freedesktop.ScreenSaver
 #ignore noroot
 ignore dbus-user none
 
-# Redirect
+
+# Redirect - Disable for CAC Reader
+# Uncomment the below include and remove the firefox-common.profile file section
+#   below if you are NOT using a CAC Reader.
 include firefox-common.profile
