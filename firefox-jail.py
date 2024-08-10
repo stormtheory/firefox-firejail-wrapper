@@ -25,12 +25,12 @@ FIREFOX_BIN = '/usr/lib/firefox/firefox'
 PROFILE = '/sandbox/firefox.profile'
 SANDBOX_NAME = 'sandyfox'
 
-DEFAULT_FIREJAIL_OPTIONS = '--noroot --nodvd --keep-var-tmp --disable-mnt --novideo --noprofile --machine-id'
+DEFAULT_FIREJAIL_OPTIONS = '--noroot --disable-mnt --novideo --noprofile --machine-id'
 
 # Opional files and variables:
 PROFILE_CAC_READER = '/sandbox/firefox-cac.profile'
 
-VIDEO_FIREJAIL_OPTIONS = '--noroot --nodvd --keep-var-tmp --disable-mnt --noprofile'
+VIDEO_FIREJAIL_OPTIONS = '--noroot --disable-mnt --noprofile'
 
 import argparse
 import logging
