@@ -25,7 +25,7 @@ FIREFOX_BIN = '/usr/lib/firefox/firefox'
 DEFAULT_PROFILE = '/sandbox/firefox.profile'
 SANDBOX_NAME = 'sandyfox'
 
-DEFAULT_FIREJAIL_OPTIONS = '--noroot --disable-mnt --novideo --noprofile --machine-id'
+DEFAULT_FIREJAIL_OPTIONS = '--noroot --disable-mnt --novideo --machine-id'
 
 # Opional files and variables:
 PROFILE_CAC_READER = '/sandbox/firefox-cac.profile'
@@ -75,15 +75,15 @@ args = parser.parse_args()
 
 def VIDEO_MODE(address):
     if address is None:
-        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + VIDEO_FIREJAIL_OPTIONS + ' --include=' + PROFILE + ' ' + FIREFOX_BASH], shell=True)
+        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + VIDEO_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH], shell=True)
     else:
-        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + VIDEO_FIREJAIL_OPTIONS + ' --include=' + PROFILE + ' ' + FIREFOX_BASH + ' ' + address], shell=True)
+        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + VIDEO_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH + ' ' + address], shell=True)
 
 def SECURE(address):
     if address is None:
-        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --include=' + PROFILE + ' ' + FIREFOX_BASH], shell=True)
+        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH], shell=True)
     else:
-        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --include=' + PROFILE + ' ' + FIREFOX_BASH + ' ' + address], shell=True)
+        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH + ' ' + address], shell=True)
 
 #### VERSION INFO
 if args.version:
