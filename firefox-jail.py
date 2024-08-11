@@ -22,7 +22,7 @@
 # Files and variables required:
 FIREFOX_BASH = '/sandbox/firefox-bash'
 FIREFOX_BIN = '/usr/lib/firefox/firefox'
-PROFILE = '/sandbox/firefox.profile'
+DEFAULT_PROFILE = '/sandbox/firefox.profile'
 SANDBOX_NAME = 'sandyfox'
 
 DEFAULT_FIREJAIL_OPTIONS = '--noroot --disable-mnt --novideo --noprofile --machine-id'
@@ -101,6 +101,8 @@ if args.list:
 if args.cac:
     PROFILE = PROFILE_CAC_READER
     print (bcolors.YELLOW + 'Will load... CAC Reader Access Profile ' + PROFILE + bcolors.NC)
+else:
+    PROFILE = DEFAULT_PROFILE
 
 ### ERROR CHECKING
 os.path.exists(PROFILE)
