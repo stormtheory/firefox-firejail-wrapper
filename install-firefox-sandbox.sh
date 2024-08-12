@@ -3,33 +3,32 @@ cd "$(dirname "$0")"
 
 # OPTIONS: 
 #    force - Force deploy config files but no softlink
-#    undo - Undo the softlink
+#    undo - Undo the softlink install
 #    uninstall - Uninstalls
 
 EXE_DIR=/sandbox
 CONFIG_DIR=.
 
+
+### ERROR CHECKING
 if [ "$USER" != root ];then
 	echo "Not root"
 	exit
-fi
-
-### ERROR CHECKING
-if echo "$EXE_DIR"|grep -iq "/[abcdefghijklmnopqrstuvwxyz0123456789]";then
-	if [ -z "$EXE_DIR" ];then
-		echo "ERROR"
-		exit
-	fi
+elif echo "$EXE_DIR"|grep -iq "/[abcdefghijklmnopqrstuvwxyz0123456789]";then
+        if [ -z "$EXE_DIR" ];then
+                echo "ERROR"
+                exit
+        fi
 else
         echo "DANGER!: EXE_DIR cannot be just /"
-	exit
+        exit
 fi
 if [ ! -f $CONFIG_DIR/firefox-jail.py ];then
-	echo "ERROR: $CONFIG_DIR/firefox-jail.py not found..."
-	exit
+        echo "ERROR: $CONFIG_DIR/firefox-jail.py not found..."
+        exit
 elif [ ! -f $CONFIG_DIR/firefox.profile ];then
         echo "ERROR: $CONFIG_DIR/firefox.profile not found..."
-        exit 
+        exit
 fi
 
 function DEPLOY {
@@ -37,6 +36,8 @@ function DEPLOY {
         echo " Deploying..."
         if [ ! -d $EXE_DIR ];then
 		mkdir $EXE_DIR
+		chmod 755 $EXE_DIR
+		chown root:root $EXE_DIR
 	fi
         cp $CONFIG_DIR/firefox-jail.py $EXE_DIR
         chmod 755 $EXE_DIR/firefox-jail.py
@@ -64,8 +65,8 @@ function UNLINK {
 }
 
 function UNINSTALL {
-	UNLINK
-	rm -rf $EXE_DIR
+        UNLINK
+        rm -rf $EXE_DIR
 }
 
 if [ ! -z "$1" ];then
@@ -73,6 +74,7 @@ if [ ! -z "$1" ];then
 		if [ -L /usr/bin/firefox ];then
 			echo "linked, undo'ing, acting..."
 			UNLINK
+			exit
 		else
         		echo "Linked all good"
 		fi
@@ -81,6 +83,7 @@ if [ ! -z "$1" ];then
 		DEPLOY
 	elif [ "$1" == uninstall ];then
                 UNINSTALL
+		exit
 	fi
 	exit
 fi
