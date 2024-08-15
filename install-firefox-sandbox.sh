@@ -53,6 +53,12 @@ function DEPLOY {
 		chmod 755 $EXE_DIR
 		chown root:root $EXE_DIR
 	fi
+	if [ ! -f $EXE_DIR/configJailFirefox.py ];then
+		cp $CONFIG_DIR/configJailFirefox.py $EXE_DIR
+		chmod 644 $EXE_DIR/configJailFirefox.py
+	else
+		echo "Config file $EXE_DIR/configJailFirefox.py already installed... skipping"
+	fi
         cp $CONFIG_DIR/firefox-jail.py $EXE_DIR
         chmod 755 $EXE_DIR/firefox-jail.py
         cp $CONFIG_DIR/firefox.profile $EXE_DIR
