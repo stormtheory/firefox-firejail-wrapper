@@ -9,7 +9,6 @@ cd "$(dirname "$0")"
 EXE_DIR=/sandbox
 CONFIG_DIR=.
 
-
 ### ERROR CHECKING
 if [ "$USER" != root ];then
 	echo "Not root"
@@ -29,6 +28,21 @@ if [ ! -f $CONFIG_DIR/firefox-jail.py ];then
 elif [ ! -f $CONFIG_DIR/firefox.profile ];then
         echo "ERROR: $CONFIG_DIR/firefox.profile not found..."
         exit
+fi
+if [ -f /usr/bin/dpkg ];then
+	if dpkg -l|grep -q firejail;then
+        	echo ''
+	else
+        	echo "ERROR: Firejail is not installed!"
+        	exit
+	fi
+elif [ -f /usr/bin/rpm ];then
+	if rpm -qa|grep -q firejail;then
+                echo ''
+        else
+                echo "ERROR: Firejail is not installed!"
+                exit
+        fi
 fi
 
 function DEPLOY {
