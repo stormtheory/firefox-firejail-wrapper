@@ -19,25 +19,13 @@
 # Opional files:
 ## /sandbox/firefox-cac.profile
 
-# Files and variables required:
-FIREFOX_BASH = '/sandbox/firefox-bash'
-FIREFOX_BIN = '/usr/lib/firefox/firefox'
-DEFAULT_PROFILE = '/sandbox/firefox.profile'
-SANDBOX_NAME = 'sandyfox'
-
-DEFAULT_FIREJAIL_OPTIONS = '--noroot --disable-mnt --novideo --machine-id'
-
-# Opional files and variables:
-PROFILE_CAC_READER = '/sandbox/firefox-cac.profile'
-
-VIDEO_FIREJAIL_OPTIONS = '--noroot --disable-mnt --noprofile'
-
 import argparse
 import logging
 import subprocess
 import sys
 import os
 from os import geteuid
+import configJailFirefox
 
 ### SET LOGGING LEVEL
 lLevel = logging.INFO     # INFO, DEBUG
@@ -75,19 +63,19 @@ args = parser.parse_args()
 
 def VIDEO_MODE(address):
     if address is None:
-        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + VIDEO_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH], shell=True)
+        subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.VIDEO_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH], shell=True)
     else:
-        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + VIDEO_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH + ' ' + address], shell=True)
+        subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.VIDEO_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH + ' ' + address], shell=True)
 
 def SECURE(address):
     if address is None:
-        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH], shell=True)
+        subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH], shell=True)
     else:
-        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH + ' ' + address], shell=True)
+        subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH + ' ' + address], shell=True)
 
 #### VERSION INFO
 if args.version:
-    subprocess.run(["{} --version".format(FIREFOX_BIN)], shell=True)
+    subprocess.run(["{} --version".format(configJailFirefox.FIREFOX_BIN)], shell=True)
     subprocess.run(["firejail --version"], shell=True)
     sys.exit()
 
@@ -96,23 +84,22 @@ if args.list:
     subprocess.run(["firejail --list"], shell=True)
     sys.exit()
 
-
 #### CAC READER PROFILE SWITCH
 if args.cac:
-    PROFILE = PROFILE_CAC_READER
+    PROFILE = configJailFirefox.PROFILE_CAC_READER
     print (bcolors.YELLOW + 'Will load... CAC Reader Access Profile ' + PROFILE + bcolors.NC)
 else:
-    PROFILE = DEFAULT_PROFILE
+    PROFILE = configJailFirefox.DEFAULT_PROFILE
 
 ### ERROR CHECKING
 os.path.exists(PROFILE)
-if os.path.exists(FIREFOX_BASH):
-    logging.debug(FIREFOX_BASH + ' was found')
+if os.path.exists(configJailFirefox.FIREFOX_BASH):
+    logging.debug(configJailFirefox.FIREFOX_BASH + ' was found')
+    FIREFOX_BASH = configJailFirefox.FIREFOX_BASH
 else:
-    print('ERROR: ' + FIREFOX_BASH + ' file was not found. Using ' + FIREFOX_BIN)
-    FIREFOX_BASH = FIREFOX_BIN
-os.path.exists(FIREFOX_BIN)
-
+    print('ERROR: ' + configJailFirefox.FIREFOX_BASH + ' file was not found. Using ' + configJailFirefox.FIREFOX_BIN)
+    FIREFOX_BASH = configJailFirefox.FIREFOX_BIN
+os.path.exists(configJailFirefox.FIREFOX_BIN)
 
 #### NOT SANDBOX'd    
 if args.unbox:
