@@ -18,6 +18,7 @@
 
 # Opional files:
 ## /sandbox/firefox-cac.profile
+## /sandbox/firefox-drm.profile
 
 import argparse
 import logging
@@ -56,16 +57,12 @@ parser.add_argument("-v", "--version", action='store_true', help='Version inform
 parser.add_argument("-u", "--unbox", action='store_true', help='Run firefox without a sandbox')
 parser.add_argument("-l", "--list", action='store_true', help='Run firejail command to list sandboxes')
 parser.add_argument("--cac", action='store_true', help='Run firefox to allow for CAC Readers in a sandbox')
+parser.add_argument("--drm", action='store_true', help='Run firefox to allow for DRM to run for sites like Netflix or Disney+ in a sandbox')
 parser.add_argument("--new-window", help='Firefox command to open in new window')
 parser.add_argument("--new-tab", help='Firefox command to open in new tab')
+parser.add_argument("--private-window", action='store_true', help='<url> Open <url> in a new private window.')
 parser.add_argument("address", nargs='?')
 args = parser.parse_args()
-
-def VIDEO_MODE(address):
-    if address is None:
-        subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.VIDEO_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH], shell=True)
-    else:
-        subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.VIDEO_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH + ' ' + address], shell=True)
 
 def SECURE(address):
     if address is None:
@@ -88,6 +85,9 @@ if args.list:
 if args.cac:
     PROFILE = configJailFirefox.PROFILE_CAC_READER
     print (bcolors.YELLOW + 'Will load... CAC Reader Access Profile ' + PROFILE + bcolors.NC)
+if args.drm:
+    PROFILE = configJailFirefox.PROFILE_NETFLIX_DRM
+    print (bcolors.YELLOW + 'Will load... DRM Profile to allow for sites like Netflix ' + PROFILE + bcolors.NC)
 else:
     PROFILE = configJailFirefox.DEFAULT_PROFILE
 
@@ -116,6 +116,14 @@ if args.unbox:
         print(ADDRESS)
         subprocess.run([FIREFOX_BASH + ' --new-tab ' + ADDRESS], shell=True)
         sys.exit()
+    elif args.private_window:
+        ADDRESS = vars(args)['address']
+        if ADDRESS is None:
+            ADDRESS=''
+        ADDRESS = '--private-window ' + ADDRESS
+        print(ADDRESS)
+        subprocess.run([FIREFOX_BASH + ' --new-tab ' + ADDRESS], shell=True)
+        sys.exit()
     elif len(sys.argv) <= 2:
         subprocess.run([FIREFOX_BASH], shell=True)
         sys.exit()
@@ -136,6 +144,13 @@ if args.new_window:
 elif args.new_tab:
     ADDRESS = vars(args)['new_tab']
     ADDRESS = '--new-tab ' + ADDRESS
+    print(ADDRESS)
+    SECURE(ADDRESS)
+elif args.private_window:
+    ADDRESS = vars(args)['address']
+    if ADDRESS is None:
+        ADDRESS=''
+    ADDRESS = '--private-window ' + ADDRESS
     print(ADDRESS)
     SECURE(ADDRESS)
     sys.exit()
