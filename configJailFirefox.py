@@ -28,5 +28,6 @@ DEFAULT_FIREJAIL_OPTIONS = '--noroot --disable-mnt --novideo --machine-id'
 
 # Opional files and variables:
 PROFILE_CAC_READER = '/sandbox/firefox-cac.profile'
+PROFILE_NETFLIX_DRM = '/sandbox/firefox-drm.profile'
 
 VIDEO_FIREJAIL_OPTIONS = '--noroot --disable-mnt --noprofile'

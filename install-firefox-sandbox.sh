@@ -63,6 +63,7 @@ function DEPLOY {
         chmod 755 $EXE_DIR/firefox-jail.py
         cp $CONFIG_DIR/firefox.profile $EXE_DIR
         cp $CONFIG_DIR/firefox-cac.profile $EXE_DIR
+	cp $CONFIG_DIR/firefox-drm.profile $EXE_DIR
         chmod 644 $EXE_DIR/*.profile
         chown -R root:root $EXE_DIR
 }
