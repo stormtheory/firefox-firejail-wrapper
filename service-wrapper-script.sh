@@ -3,7 +3,6 @@ cd "$(dirname "$0")"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 EXE_DIR=/sandbox
-CONFIG_DIR=/root/config/setup/sandbox
 LAUNCHER_FILE=/usr/bin/firefox
 
 ### ERROR CHECKING
