@@ -66,9 +66,9 @@ args = parser.parse_args()
 
 def SECURE(address):
     if address is None:
-        subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH], shell=True)
+        subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER], shell=True)
     else:
-        subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_BASH + ' ' + address], shell=True)
+        subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER + ' ' + address], shell=True)
 
 #### VERSION INFO
 if args.version:
@@ -93,12 +93,12 @@ else:
 
 ### ERROR CHECKING
 os.path.exists(PROFILE)
-if os.path.exists(configJailFirefox.FIREFOX_BASH):
-    logging.debug(configJailFirefox.FIREFOX_BASH + ' was found')
-    FIREFOX_BASH = configJailFirefox.FIREFOX_BASH
+if os.path.exists(configJailFirefox.FIREFOX_LAUNCHER):
+    logging.debug(configJailFirefox.FIREFOX_LAUNCHER + ' was found')
+    FIREFOX_LAUNCHER = configJailFirefox.FIREFOX_LAUNCHER
 else:
-    print('ERROR: ' + configJailFirefox.FIREFOX_BASH + ' file was not found. Using ' + configJailFirefox.FIREFOX_BIN)
-    FIREFOX_BASH = configJailFirefox.FIREFOX_BIN
+    print('ERROR: ' + configJailFirefox.FIREFOX_LAUNCHER + ' file was not found. Using ' + configJailFirefox.FIREFOX_BIN)
+    FIREFOX_LAUNCHER = configJailFirefox.FIREFOX_BIN
 os.path.exists(configJailFirefox.FIREFOX_BIN)
 
 #### NOT SANDBOX'd    
@@ -108,13 +108,13 @@ if args.unbox:
         ADDRESS = vars(args)['new_window']
         ADDRESS = '--new-window ' + ADDRESS
         print(ADDRESS)
-        subprocess.run([FIREFOX_BASH + ' --new-window ' + ADDRESS], shell=True)
+        subprocess.run([FIREFOX_LAUNCHER + ' --new-window ' + ADDRESS], shell=True)
         sys.exit()
     elif args.new_tab:
         ADDRESS = vars(args)['new_tab']
         ADDRESS = '--new-tab ' + ADDRESS
         print(ADDRESS)
-        subprocess.run([FIREFOX_BASH + ' --new-tab ' + ADDRESS], shell=True)
+        subprocess.run([FIREFOX_LAUNCHER + ' --new-tab ' + ADDRESS], shell=True)
         sys.exit()
     elif args.private_window:
         ADDRESS = vars(args)['address']
@@ -122,15 +122,15 @@ if args.unbox:
             ADDRESS=''
         ADDRESS = '--private-window ' + ADDRESS
         print(ADDRESS)
-        subprocess.run([FIREFOX_BASH + ' --new-tab ' + ADDRESS], shell=True)
+        subprocess.run([FIREFOX_LAUNCHER + ' --new-tab ' + ADDRESS], shell=True)
         sys.exit()
     elif len(sys.argv) <= 2:
-        subprocess.run([FIREFOX_BASH], shell=True)
+        subprocess.run([FIREFOX_LAUNCHER], shell=True)
         sys.exit()
     else:
         ADDRESS = vars(args)['address']
         print(ADDRESS)
-        subprocess.run([FIREFOX_BASH + ' ' + ADDRESS], shell=True)
+        subprocess.run([FIREFOX_LAUNCHER + ' ' + ADDRESS], shell=True)
         sys.exit()
 
 #### ELSE DEFAULT SECURE SANDBOX
