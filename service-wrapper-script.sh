@@ -6,33 +6,20 @@ EXE_DIR=/sandbox
 LAUNCHER_FILE=/usr/bin/firefox
 
 ### ERROR CHECKING
-if [ "$USER" != root ];then
-	echo "Not root"
-	exit
-elif echo "$EXE_DIR"|grep -iq "/[abcdefghijklmnopqrstuvwxyz0123456789]";then
-        if [ -z "$EXE_DIR" ];then
-                echo "ERROR"
-                exit
-        fi
-else
-        echo "DANGER!: EXE_DIR cannot be just /"
+ID=$(id -u)
+if [ "$ID" != 0 ];then
+        echo "Not root"
         exit
 fi
-if [ -f $EXE_DIR/firefox-bash ];then
-	## Filename change
-	mv $EXE_DIR/firefox-bash $EXE_DIR/firefox-launcher
-fi
 if [ -f /usr/bin/dpkg ];then
-	if dpkg -l|grep -q firejail;then
-        	echo ''
-	else
+	dpkg -l|grep -q firejail
+	if [ "$?" != 0 ];then
         	echo "ERROR: Firejail is not installed!"
         	exit
 	fi
 elif [ -f /usr/bin/rpm ];then
-	if rpm -qa|grep -q firejail;then
-                echo ''
-        else
+	rpm -qa|grep -q firejail
+	if [ "$?" != 0 ];then
                 echo "ERROR: Firejail is not installed!"
                 exit
         fi
@@ -52,9 +39,9 @@ function LINK {
 }
 
 while true;do
-if [ ! -L $LAUNCHER_FILE ];then
-        echo "not linked, acting..."
-        LINK
-fi
-sleep 90
+	if [ ! -L $LAUNCHER_FILE ];then
+        	echo "not linked, acting..."
+        	LINK
+	fi
+	sleep 90
 done
