@@ -6,13 +6,13 @@
 # All firefox commands get intercepted by the python script and then safely ran.
 
 # This python script runs from /sandbox where firefox.profile lives as well, as defined below. It is called by a softlink from the /usr/bin/firefox location.
-# The firefox-bash is the orginal 'firefox' command script that comes with the firefox package from mozilla. This is moved to /sandbox and renamed from /usr/bin/firefox.
+# The firefox-launcher is the orginal 'firefox' command script that comes with the firefox package from mozilla. This is moved to /sandbox and renamed from /usr/bin/firefox.
 # The CLI command firefox which is found in /usr/bin/firefox is softlink'd to /sandbox/firefox-jail.py
 
 # Please note that the use of --nodbus will break the joining of two firefox sessions and you will get: "Firefox is already running, but is not responding."
 
 # Files required:
-## /sandbox/firefox-bash
+## /sandbox/firefox-launcher
 ## /sandbox/firefox-jail.py
 ## /sandbox/firefox.profile
 
@@ -21,8 +21,10 @@
 ## /sandbox/firefox-drm.profile
 
 import argparse
+import time
 import logging
 import subprocess
+import threading
 import sys
 import os
 from os import geteuid
@@ -69,6 +71,12 @@ def SECURE(address):
         subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER], shell=True)
     else:
         subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER + ' ' + address], shell=True)
+
+def CLOSE():
+    global EXIT_PYTHON
+    EXIT_PYTHON = 'TRUE'
+    print('Application Closing...')
+    sys.exit
 
 #### VERSION INFO
 if args.version:
@@ -133,6 +141,36 @@ if args.unbox:
         subprocess.run([FIREFOX_LAUNCHER + ' ' + ADDRESS], shell=True)
         sys.exit()
 
+
+#### Deploy firejail validator
+## This function will check at start up that the sandbox launched as 
+## it should and that the application is a registered sandbox with firejail.
+## If not registered the with firejail, the pythan will pkill the application.
+def Sandbox_Validator ():
+    # EXIT_CHECK() - Extra code needed for when a looping check is needed.
+    def EXIT_CHECK():
+        if 'EXIT_PYTHON' in globals():
+            logging.debug('Exiting Validator')
+            sys.exit()
+    time.sleep(5)
+    while True:
+        FIREJAIL_LIST = subprocess.run(["firejail --list|grep {}".format(configJailFirefox.SANDBOX_NAME)], shell=True).stdout
+        FIREJAIL_LIST_CODE = subprocess.run(["firejail --list|grep {}".format(configJailFirefox.SANDBOX_NAME)], shell=True).returncode
+        logging.debug(FIREJAIL_LIST)
+        logging.debug(FIREJAIL_LIST_CODE)
+        if FIREJAIL_LIST_CODE is not int('0'):
+            print('ERROR: Sandboxing issue... Exiting')
+            subprocess.run(["pkill firefox"], shell=True)
+            print('Safed')
+            sys.exit()
+        logging.debug('Sandboxed exiting Validator')
+        sys.exit()
+
+
+t1 = threading.Thread(target=Sandbox_Validator, daemon=False)
+t1.start()
+
+
 #### ELSE DEFAULT SECURE SANDBOX
 print(bcolors.GREEN + ' Sandboxing...' + bcolors.NC)
 if args.new_window:
@@ -140,12 +178,13 @@ if args.new_window:
     ADDRESS = '--new-window ' + ADDRESS
     print(ADDRESS)
     SECURE(ADDRESS)
-    sys.exit()
+    CLOSE()
 elif args.new_tab:
     ADDRESS = vars(args)['new_tab']
     ADDRESS = '--new-tab ' + ADDRESS
     print(ADDRESS)
     SECURE(ADDRESS)
+    CLOSE()
 elif args.private_window:
     ADDRESS = vars(args)['address']
     if ADDRESS is None:
@@ -153,12 +192,12 @@ elif args.private_window:
     ADDRESS = '--private-window ' + ADDRESS
     print(ADDRESS)
     SECURE(ADDRESS)
-    sys.exit()
+    CLOSE()
 elif len(sys.argv) <= 1:
     SECURE('')
-    sys.exit()
+    CLOSE()
 else:
     ADDRESS = vars(args)['address']
     print(ADDRESS)
     SECURE(ADDRESS)
-    sys.exit()
+    CLOSE()
