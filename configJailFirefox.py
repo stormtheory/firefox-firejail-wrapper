@@ -31,3 +31,7 @@ PROFILE_CAC_READER = '/sandbox/firefox-cac.profile'
 PROFILE_NETFLIX_DRM = '/sandbox/firefox-drm.profile'
 
 VIDEO_FIREJAIL_OPTIONS = '--noroot --disable-mnt --noprofile'
+
+# Other options:
+## true/false
+USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX = 'false'
