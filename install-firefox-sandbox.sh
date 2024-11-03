@@ -39,16 +39,14 @@ if [ -f $EXE_DIR/firefox-bash ];then
 	mv $EXE_DIR/firefox-bash $EXE_DIR/firefox-launcher
 fi
 if [ -f /usr/bin/dpkg ];then
-	if dpkg -l|grep -q firejail;then
-        	echo ''
-	else
+	dpkg -l|grep -q firejail
+	if [ "$?" != 0 ];then
         	echo "ERROR: Firejail is not installed!"
         	exit
 	fi
 elif [ -f /usr/bin/rpm ];then
-	if rpm -qa|grep -q firejail;then
-                echo ''
-        else
+	rpm -qa|grep -q firejail
+	if [ "$?" != 0 ];then
                 echo "ERROR: Firejail is not installed!"
                 exit
         fi
@@ -65,9 +63,17 @@ function DEPLOY {
 	if [ ! -f $EXE_DIR/configJailFirefox.py ];then
 		cp $CONFIG_DIR/configJailFirefox.py $EXE_DIR
 		chmod 644 $EXE_DIR/configJailFirefox.py
+	elif [ -f $EXE_DIR/configJailFirefox.py ];then
+                grep -q 'USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX' $EXE_DIR/configJailFirefox.py
+                if [ "$?" != 0 ];then
+                echo "Updating config file #1..." >> $EXE_DIR/configJailFirefox.py
+                echo "# Other options:" >> $EXE_DIR/configJailFirefox.py
+                echo "## true/false" >> $EXE_DIR/configJailFirefox.py
+                echo "USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX = 'false'" >> $EXE_DIR/configJailFirefox.py
 	else
 		echo "Config file $EXE_DIR/configJailFirefox.py already installed... skipping"
 	fi
+
         cp $CONFIG_DIR/firefox-jail.py $EXE_DIR
         chmod 755 $EXE_DIR/firefox-jail.py
         cp $CONFIG_DIR/firefox.profile $EXE_DIR

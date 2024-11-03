@@ -154,21 +154,19 @@ def Sandbox_Validator ():
             sys.exit()
     time.sleep(5)
     while True:
-        FIREJAIL_LIST = subprocess.run(["firejail --list|grep {}".format(configJailFirefox.SANDBOX_NAME)], shell=True).stdout
-        FIREJAIL_LIST_CODE = subprocess.run(["firejail --list|grep {}".format(configJailFirefox.SANDBOX_NAME)], shell=True).returncode
-        logging.debug(FIREJAIL_LIST)
+        FIREJAIL_LIST_CODE = subprocess.run(["firejail --list|grep -q {}".format(configJailFirefox.SANDBOX_NAME)], shell=True).returncode
         logging.debug(FIREJAIL_LIST_CODE)
         if FIREJAIL_LIST_CODE is not int('0'):
             print('ERROR: Sandboxing issue... Exiting')
             subprocess.run(["pkill firefox"], shell=True)
             print('Safed')
             sys.exit()
-        logging.debug('Sandboxed exiting Validator')
+        logging.debug('Sandbox is registered, exiting Validator')
         sys.exit()
 
-
-t1 = threading.Thread(target=Sandbox_Validator, daemon=False)
-t1.start()
+if configJailFirefox.USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX is 'false':
+    t1 = threading.Thread(target=Sandbox_Validator, daemon=False)
+    t1.start()
 
 
 #### ELSE DEFAULT SECURE SANDBOX
