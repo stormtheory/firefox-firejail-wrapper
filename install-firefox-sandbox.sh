@@ -66,10 +66,11 @@ function DEPLOY {
 	elif [ -f $EXE_DIR/configJailFirefox.py ];then
                 grep -q 'USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX' $EXE_DIR/configJailFirefox.py
                 if [ "$?" != 0 ];then
-                echo "Updating config file #1..." >> $EXE_DIR/configJailFirefox.py
-                echo "# Other options:" >> $EXE_DIR/configJailFirefox.py
-                echo "## true/false" >> $EXE_DIR/configJailFirefox.py
-                echo "USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX = 'false'" >> $EXE_DIR/configJailFirefox.py
+                echo "Updating config file #1..."
+                	echo "# Other options:" >> $EXE_DIR/configJailFirefox.py
+                	echo "## true/false" >> $EXE_DIR/configJailFirefox.py
+                	echo "USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX = 'false'" >> $EXE_DIR/configJailFirefox.py
+		fi
 	else
 		echo "Config file $EXE_DIR/configJailFirefox.py already installed... skipping"
 	fi
