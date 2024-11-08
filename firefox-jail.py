@@ -30,13 +30,6 @@ import os
 from os import geteuid
 import configJailFirefox
 
-### SET LOGGING LEVEL
-lLevel = logging.INFO     # INFO, DEBUG
-
-### LOGGER CONFIG
-logger = logging.getLogger()
-logger.setLevel(lLevel)
-
 ## COLORS
 class bcolors:
     HEADER = '\033[95m'
@@ -56,6 +49,7 @@ if os.geteuid() == 0:
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-v", "--version", action='store_true', help='Version information for firejail and firefox')
+parser.add_argument("-d", "--debug", action='store_true', help='Run wrapper in debug mode')
 parser.add_argument("-u", "--unbox", action='store_true', help='Run firefox without a sandbox')
 parser.add_argument("-l", "--list", action='store_true', help='Run firejail command to list sandboxes')
 parser.add_argument("--cac", action='store_true', help='Run firefox to allow for CAC Readers in a sandbox')
@@ -65,6 +59,16 @@ parser.add_argument("--new-tab", help='Firefox command to open in new tab')
 parser.add_argument("--private-window", action='store_true', help='<url> Open <url> in a new private window.')
 parser.add_argument("address", nargs='?')
 args = parser.parse_args()
+
+### SET LOGGING LEVEL
+if args.debug:
+    lLevel = logging.DEBUG     # INFO, DEBUG
+else:
+    lLevel = logging.INFO     # INFO, DEBUG
+
+### LOGGER CONFIG
+logger = logging.getLogger()
+logger.setLevel(lLevel)
 
 def SECURE(address):
     if address is None:
@@ -164,9 +168,12 @@ def Sandbox_Validator ():
         logging.debug('Sandbox is registered, exiting Validator')
         sys.exit()
 
-if configJailFirefox.USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX is 'false':
+if configJailFirefox.USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX == 'false':
     t1 = threading.Thread(target=Sandbox_Validator, daemon=False)
     t1.start()
+else:
+    logging.debug('Not going to run the Validator')
+    logging.debug('Using firejail within another firejail sandbox...')
 
 
 #### ELSE DEFAULT SECURE SANDBOX
