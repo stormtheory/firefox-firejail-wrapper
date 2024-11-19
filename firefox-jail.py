@@ -42,6 +42,9 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+SANDBOX_NAME =configJailFirefox.SANDBOX_NAME
+DEFAULT_FIREJAIL_OPTIONS = configJailFirefox.DEFAULT_FIREJAIL_OPTIONS
+
 ### Making it root safe
 if os.geteuid() == 0:
     print(bcolors.RED + ' WARNING! Hey, you are ROOT! and should not run firefox.' + bcolors.NC)
@@ -52,6 +55,7 @@ parser.add_argument("-v", "--version", action='store_true', help='Version inform
 parser.add_argument("-d", "--debug", action='store_true', help='Run wrapper in debug mode')
 parser.add_argument("-u", "--unbox", action='store_true', help='Run firefox without a sandbox')
 parser.add_argument("-l", "--list", action='store_true', help='Run firejail command to list sandboxes')
+parser.add_argument("-j", "--join", action='store_true', help='Run firejail command to join the sandbox in a shell terminal')
 parser.add_argument("--cac", action='store_true', help='Run firefox to allow for CAC Readers in a sandbox')
 parser.add_argument("--drm", action='store_true', help='Run firefox to allow for DRM to run for sites like Netflix or Disney+ in a sandbox')
 parser.add_argument("--new-window", help='Firefox command to open in new window')
@@ -72,9 +76,9 @@ logger.setLevel(lLevel)
 
 def SECURE(address):
     if address is None:
-        subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER], shell=True)
+        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER], shell=True)
     else:
-        subprocess.run(['firejail --name=' + configJailFirefox.SANDBOX_NAME + ' ' + configJailFirefox.DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER + ' ' + address], shell=True)
+        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER + ' ' + address], shell=True)
 
 def CLOSE():
     global EXIT_PYTHON
@@ -91,6 +95,11 @@ if args.version:
 #### List Sandboxes
 if args.list:
     subprocess.run(["firejail --list"], shell=True)
+    sys.exit()
+
+#### Join Sandbox in a Shell
+if args.join:
+    subprocess.run(["firejail --join={}".format(SANDBOX_NAME)], shell=True)
     sys.exit()
 
 #### CAC READER PROFILE SWITCH
@@ -156,14 +165,14 @@ def Sandbox_Validator ():
         if 'EXIT_PYTHON' in globals():
             logging.debug('Exiting Validator')
             sys.exit()
-    time.sleep(5)
+    time.sleep(2)
     while True:
-        FIREJAIL_LIST_CODE = subprocess.run(["firejail --list|grep -q {}".format(configJailFirefox.SANDBOX_NAME)], shell=True).returncode
+        FIREJAIL_LIST_CODE = subprocess.run(["firejail --list|grep -q {}".format(SANDBOX_NAME)], shell=True).returncode
         logging.debug(FIREJAIL_LIST_CODE)
         if FIREJAIL_LIST_CODE is not int('0'):
-            print('ERROR: Sandboxing issue... Exiting')
-            subprocess.run(["pkill firefox"], shell=True)
-            print('Safed')
+            print(bcolors.RED + 'ERROR: Sandboxing issue... Exiting' + bcolors.NC)
+            subprocess.run(["pkill -f {}".format(FIREFOX_LAUNCHER)], shell=True)
+            print(bcolors.YELLOW + 'Safed' + bcolors.NC)
             sys.exit()
         logging.debug('Sandbox is registered, exiting Validator')
         sys.exit()
