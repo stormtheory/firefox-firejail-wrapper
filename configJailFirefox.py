@@ -1,8 +1,11 @@
 # Written by StormTheory in July2024
 # Uploaded to github in Aug2024
-# Wrapper for firejail for the purpose of sandboxing the Mozilla Firefox browser.
-# This wrapper allows for seemless intergration of the sandbox and your computer environment.
-# All firefox commands get intercepted by the python script and then safely ran.
+
+# Wrapper for firejail for the purpose of sandboxing the Mozilla Firefox browser. 
+# This wrapper allows for seamless intergration of the sandbox and your computer environment. 
+# All firefox commands get intercepted by the wrapper's python script and then safely runs the sandbox. 
+# After the sandbox launches firefox it will make sure that the sandbox is working. 
+# If the sandbox is not registered it will pkill the program, in this case firefox.
 
 # This python script runs from /sandbox where firefox.profile lives as well, as defined below. It is called by a softlink from the /usr/bin/firefox location.
 # The firefox-launcher is the orginal 'firefox' command script that comes with the firefox package from mozilla. This is moved to /sandbox and renamed from /usr/bin/firefox.

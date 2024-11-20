@@ -3,15 +3,20 @@ cd "$(dirname "$0")"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 # OPTIONS: 
-#    force - Force deploy config files but no softlink
-#    reinstall - Force deploy config files
-#    undo - Undo the softlink install
+#    force - 	 Force deploy config files and softlink
+#    reinstall - Force deploy config files and softlink
+#    undo - 	 Undo the softlink install
 #    uninstall - Uninstalls
 
 EXE_DIR=/sandbox
 CONFIG_DIR=.
 LAUNCHER_FILE=/usr/bin/firefox
 SERVICE_NAME=wrapper-firefox.service
+
+FIREJAIL_APP_LAUNCHER_FILE=firefox-launcher
+FIREJAIL_PYTHON_WRAPPER=firefox-jail.py
+FIREJAIL_CONFIG_WRAPPER=configJailFirefox.py
+FIREJAIL_DEFAULT_PROFILE=firefox.profile
 
 ### ERROR CHECKING
 ID=$(id -u)
@@ -27,16 +32,16 @@ else
         echo "DANGER!: EXE_DIR cannot be just /"
         exit
 fi
-if [ ! -f $CONFIG_DIR/firefox-jail.py ];then
-        echo "ERROR: $CONFIG_DIR/firefox-jail.py not found..."
+if [ ! -f $CONFIG_DIR/$FIREJAIL_PYTHON_WRAPPER ];then
+        echo "ERROR: $CONFIG_DIR/$FIREJAIL_PYTHON_WRAPPER not found..."
         exit
-elif [ ! -f $CONFIG_DIR/firefox.profile ];then
-        echo "ERROR: $CONFIG_DIR/firefox.profile not found..."
+elif [ ! -f $CONFIG_DIR/$FIREJAIL_DEFAULT_PROFILE ];then
+        echo "ERROR: $CONFIG_DIR/$FIREJAIL_DEFAULT_PROFILE not found..."
         exit
 fi
 if [ -f $EXE_DIR/firefox-bash ];then
 	## Filename change
-	mv $EXE_DIR/firefox-bash $EXE_DIR/firefox-launcher
+	mv $EXE_DIR/firefox-bash $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE
 fi
 if [ -f /usr/bin/dpkg ];then
 	dpkg -l|grep -q firejail
@@ -60,35 +65,38 @@ function DEPLOY {
 		chmod 755 $EXE_DIR
 		chown root:root $EXE_DIR
 	fi
-	if [ ! -f $EXE_DIR/configJailFirefox.py ];then
-		cp $CONFIG_DIR/configJailFirefox.py $EXE_DIR
-		chmod 644 $EXE_DIR/configJailFirefox.py
-	elif [ -f $EXE_DIR/configJailFirefox.py ];then
-                grep -q 'USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX' $EXE_DIR/configJailFirefox.py
+	if [ ! -f $EXE_DIR/$FIREJAIL_CONFIG_WRAPPER ];then
+		cp $CONFIG_DIR/$FIREJAIL_CONFIG_WRAPPER $EXE_DIR
+		chmod 644 $EXE_DIR/$FIREJAIL_CONFIG_WRAPPER
+	elif [ -f $EXE_DIR/$FIREJAIL_CONFIG_WRAPPER ];then
+                grep -q 'USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX' $EXE_DIR/$FIREJAIL_CONFIG_WRAPPER
                 if [ "$?" != 0 ];then
-                echo "Updating config file #1..."
-                	echo "# Other options:" >> $EXE_DIR/configJailFirefox.py
-                	echo "## true/false" >> $EXE_DIR/configJailFirefox.py
-                	echo "USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX = 'false'" >> $EXE_DIR/configJailFirefox.py
+                	echo "Updating config file #1..."
+                	echo "" >> $EXE_DIR/$FIREJAIL_CONFIG_WRAPPER
+			echo "# Other options:" >> $EXE_DIR/$FIREJAIL_CONFIG_WRAPPER
+                	echo "## true/false" >> $EXE_DIR/$FIREJAIL_CONFIG_WRAPPER
+                	echo "USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX = 'false'" >> $EXE_DIR/$FIREJAIL_CONFIG_WRAPPER
 		fi
 	else
-		echo "Config file $EXE_DIR/configJailFirefox.py already installed... skipping"
+		echo "Config file $EXE_DIR/$FIREJAIL_CONFIG_WRAPPER already installed... skipping"
 	fi
 
-        cp $CONFIG_DIR/firefox-jail.py $EXE_DIR
-        chmod 755 $EXE_DIR/firefox-jail.py
-        cp $CONFIG_DIR/firefox.profile $EXE_DIR
+        cp $CONFIG_DIR/$FIREJAIL_PYTHON_WRAPPER $EXE_DIR
+        chmod 755 $EXE_DIR/$FIREJAIL_PYTHON_WRAPPER
+        cp $CONFIG_DIR/$FIREJAIL_DEFAULT_PROFILE $EXE_DIR
         cp $CONFIG_DIR/firefox-cac.profile $EXE_DIR
 	cp $CONFIG_DIR/firefox-drm.profile $EXE_DIR
 	cp $CONFIG_DIR/service-wrapper-script.sh $EXE_DIR
         chmod 644 $EXE_DIR/*.profile
 	chmod 700 $EXE_DIR/service-wrapper-script.sh
         chown -R root:root $EXE_DIR
+}
 
+function DEPLOY_SERVICE {
 	## Deploy Service
 	if [ ! -f /etc/systemd/system/$SERVICE_NAME ];then
 echo "[Unit]
-Description=--Firefox Wrapper/Sandbox Service--
+Description=--App Wrapper/Sandbox Service--
 StartLimitIntervalSec=5
 StartLimitBurst=5
 
@@ -111,50 +119,50 @@ WantedBy=multi-user.target" > /etc/systemd/system/$SERVICE_NAME
 
 function SHORTCUT_SCRIPT_INSTALL {
 echo "#!/bin/bash
-#Script is s shortcut for running firejail sandbox
+#Script is a shortcut for running firejail sandbox
 cd $EXE_DIR/
-./firefox-jail.py" > $LAUNCHER_FILE
+./$FIREJAIL_PYTHON_WRAPPER" > $LAUNCHER_FILE
 chmod 755 $LAUNCHER_FILE
 ls -al $LAUNCHER_FILE
 }
 
 function DEPLOY_OVERWRITE {
-	### Copy Firefox 'binary/launcher' to /sandbox and place the wrapper at /usr/bin/firefox
+	### Copy APP 'bash/binary launcher' to /sandbox and place the wrapper at /usr/bin/firefox
         echo " Deploy immutable..."
-	if [ -f $EXE_DIR/firefox-launcher ];then
-		if grep -q 'firejail' $EXE_DIR/firefox-launcher;then
+	if [ -f $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE ];then
+		if grep -q 'firejail' $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE;then
 			## If firejail wrapper is there! Bad
-			rm $EXE_DIR/firefox-launcher
+			rm $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE
 		else
 			## Not wrapper, SAFE this
-			cp $EXE_DIR/firefox-launcher $EXE_DIR/firefox-launcher.bak
+			cp $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE.bak
 		fi
 	fi
 	grep -q 'firejail' $LAUNCHER_FILE
 	if [ "$?" == 1 ];then
                 ## Not wrapper, SAFE this
-        	cp $LAUNCHER_FILE $EXE_DIR/firefox-launcher
-		chmod 755 $EXE_DIR/firefox-launcher
+        	cp $LAUNCHER_FILE $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE
+		chmod 755 $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE
         fi
 	SHORTCUT_SCRIPT_INSTALL	
 }
 
 function UPDATE_OVERWRITE {
-        ### Copy Firefox 'binary/launcher' to /sandbox and place the wrapper at /usr/bin/firefox
+        ### Copy APP 'bash/binary launcher' to /sandbox and place the wrapper at /usr/bin/firefox
         echo " Deploy immutable..."
         SHORTCUT_SCRIPT_INSTALL
 }
 
 function LINK {
-        ### Copy Firefox 'binary' to /sandbox and softlink the wrapper
+        ### Copy APP 'bash/binary launcher' to /sandbox and softlink the wrapper
         echo " Linking..."
 	grep -q 'firejail' $LAUNCHER_FILE
 	if [ "$?" != 0 ];then
-        	cp $LAUNCHER_FILE $EXE_DIR/firefox-launcher
-        	chmod 755 $EXE_DIR/firefox-launcher
+        	cp $LAUNCHER_FILE $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE
+        	chmod 755 $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE
         fi
 	rm $LAUNCHER_FILE
-        ln -s $EXE_DIR/firefox-jail.py $LAUNCHER_FILE
+        ln -s $EXE_DIR/$FIREJAIL_PYTHON_WRAPPER $LAUNCHER_FILE
         ls -al $LAUNCHER_FILE
 }
 
@@ -163,7 +171,7 @@ function UNLINK {
 	unlink $LAUNCHER_FILE
 	rm $LAUNCHER_FILE
 	chattr -i $LAUNCHER_FILE
-        cp $EXE_DIR/firefox-launcher $LAUNCHER_FILE
+        cp $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE $LAUNCHER_FILE
         ls -al $LAUNCHER_FILE
 	systemctl stop $SERVICE_NAME
 }
@@ -189,8 +197,10 @@ if [ ! -z "$1" ];then
 		exit
 	elif [ "$1" == force ];then	
 		DEPLOY
+		##NO EXIT - Links Below
 	elif [ "$1" == reinstall ];then
                 DEPLOY
+		##NO EXIT - Links Below
 	elif [ "$1" == uninstall ];then
                 UNINSTALL
 		exit
@@ -201,7 +211,7 @@ fi
 
 if [ ! -L $LAUNCHER_FILE ];then
 	echo "not linked, acting..."
-	DEPLOY	
+	DEPLOY
 	LINK
 else
 	echo "Linked, all good"
