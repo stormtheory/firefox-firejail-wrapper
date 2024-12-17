@@ -156,65 +156,68 @@ if args.unbox:
         print(ADDRESS)
         subprocess.run([FIREFOX_LAUNCHER + ' ' + ADDRESS], shell=True)
         sys.exit()
-
-
-#### Deploy firejail validator
-## This function will check at start up that the sandbox launched as 
-## it should and that the application is a registered sandbox with firejail.
-## If not registered the with firejail, the pythan will pkill the application.
-def Sandbox_Validator ():
-    # EXIT_CHECK() - Extra code needed for when a looping check is needed.
-    def EXIT_CHECK():
-        if 'EXIT_PYTHON' in globals():
-            logging.debug('Exiting Validator')
-            sys.exit()
-    time.sleep(2)
-    while True:
-        FIREJAIL_LIST_CODE = subprocess.run(["firejail --list|grep -q {}".format(SANDBOX_NAME)], shell=True).returncode
-        logging.debug(FIREJAIL_LIST_CODE)
-        if FIREJAIL_LIST_CODE is not int('0'):
-            print(bcolors.RED + 'ERROR: Sandboxing issue... Exiting' + bcolors.NC)
-            subprocess.run(["pkill -f {}".format(FIREFOX_LAUNCHER)], shell=True)
-            print(bcolors.YELLOW + 'Safed' + bcolors.NC)
-            sys.exit()
-        logging.debug('Sandbox is registered, exiting Validator')
-        sys.exit()
-
-if configJailFirefox.USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX == 'false':
-    t1 = threading.Thread(target=Sandbox_Validator, daemon=False)
-    t1.start()
 else:
-    logging.debug('Not going to run the Validator')
-    logging.debug('Using firejail within another firejail sandbox...')
+### Run sandbox
+
+    #### Deploy firejail validator
+    ## This function will check at start up that the sandbox launched as 
+    ## it should and that the application is a registered sandbox with firejail.
+    ## If not registered the with firejail, the pythan will pkill the application.
+    def Sandbox_Validator ():
+        if args.unbox:
+            sys.exit
+        # EXIT_CHECK() - Extra code needed for when a looping check is needed.
+        def EXIT_CHECK():
+            if 'EXIT_PYTHON' in globals():
+                logging.debug('Exiting Validator')
+                sys.exit()
+        time.sleep(2)
+        while True:
+            FIREJAIL_LIST_CODE = subprocess.run(["firejail --list|grep -q {}".format(SANDBOX_NAME)], shell=True).returncode
+            logging.debug(FIREJAIL_LIST_CODE)
+            if FIREJAIL_LIST_CODE is not int('0'):
+                print(bcolors.RED + 'ERROR: Sandboxing issue... Exiting' + bcolors.NC)
+                subprocess.run(["pkill -f {}".format(FIREFOX_LAUNCHER)], shell=True)
+                print(bcolors.YELLOW + 'Safed' + bcolors.NC)
+                sys.exit()
+            logging.debug('Sandbox is registered, exiting Validator')
+            sys.exit()
+
+    if configJailFirefox.USE_WITHIN_ANOTHER_FIREJAIL_SANDBOX == 'false':
+        t1 = threading.Thread(target=Sandbox_Validator, daemon=False)
+        t1.start()
+    else:
+        logging.debug('Not going to run the Validator')
+        logging.debug('Using firejail within another firejail sandbox...')
 
 
-#### ELSE DEFAULT SECURE SANDBOX
-print(bcolors.GREEN + ' Sandboxing...' + bcolors.NC)
-if args.new_window:
-    ADDRESS = vars(args)['new_window']
-    ADDRESS = '--new-window ' + ADDRESS
-    print(ADDRESS)
-    SECURE(ADDRESS)
-    CLOSE()
-elif args.new_tab:
-    ADDRESS = vars(args)['new_tab']
-    ADDRESS = '--new-tab ' + ADDRESS
-    print(ADDRESS)
-    SECURE(ADDRESS)
-    CLOSE()
-elif args.private_window:
-    ADDRESS = vars(args)['address']
-    if ADDRESS is None:
-        ADDRESS=''
-    ADDRESS = '--private-window ' + ADDRESS
-    print(ADDRESS)
-    SECURE(ADDRESS)
-    CLOSE()
-elif len(sys.argv) <= 1:
-    SECURE('')
-    CLOSE()
-else:
-    ADDRESS = vars(args)['address']
-    print(ADDRESS)
-    SECURE(ADDRESS)
-    CLOSE()
+    #### ELSE DEFAULT SECURE SANDBOX
+    print(bcolors.GREEN + ' Sandboxing...' + bcolors.NC)
+    if args.new_window:
+        ADDRESS = vars(args)['new_window']
+        ADDRESS = '--new-window ' + ADDRESS
+        print(ADDRESS)
+        SECURE(ADDRESS)
+        CLOSE()
+    elif args.new_tab:
+        ADDRESS = vars(args)['new_tab']
+        ADDRESS = '--new-tab ' + ADDRESS
+        print(ADDRESS)
+        SECURE(ADDRESS)
+        CLOSE()
+    elif args.private_window:
+        ADDRESS = vars(args)['address']
+        if ADDRESS is None:
+            ADDRESS=''
+        ADDRESS = '--private-window ' + ADDRESS
+        print(ADDRESS)
+        SECURE(ADDRESS)
+        CLOSE()
+    elif len(sys.argv) <= 1:
+        SECURE('')
+        CLOSE()
+    else:
+        ADDRESS = vars(args)['address']
+        print(ADDRESS)
+        SECURE(ADDRESS)
+        CLOSE()
