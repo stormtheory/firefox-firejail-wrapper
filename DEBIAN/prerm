@@ -1,0 +1,33 @@
+#!/usr/bin/bash
+
+EXE_DIR=/opt/sandbox
+LAUNCHER_FILE=/usr/bin/firefox
+FIREJAIL_APP_LAUNCHER_FILE=firefox-launcher
+SERVICE_NAME=wrapper-firefox.service
+
+echo "Unlinking"
+unlink $LAUNCHER_FILE
+
+echo "Copying back the Firefox Launcher to $LAUNCHER_FILE"
+if [ -f $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE ];then
+	cp $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE $LAUNCHER_FILE
+	chmod 755 $LAUNCHER_FILE
+	ls -al $LAUNCHER_FILE
+else
+	echo "Sorry $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE wasn't found."
+echo "#!/bin/sh
+
+# if this isn't in the environment, firefox will forget it's the default browser
+export MOZ_APP_LAUNCHER=/usr/bin/firefox
+exec /usr/lib/firefox/firefox \"\$@\"" > $LAUNCHER_FILE
+	chmod 755 $LAUNCHER_FILE
+        ls -al $LAUNCHER_FILE
+fi
+
+echo "Handling Service"
+systemctl disable $SERVICE_NAME
+systemctl stop $SERVICE_NAME
+rm /etc/systemd/system/$SERVICE_NAME
+systemctl daemon-reload
+
+exit 0
