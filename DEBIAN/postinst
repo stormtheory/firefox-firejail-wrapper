@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+
+/sandbox/install-firefox-sandbox.sh reinstall
+/sandbox/install-firefox-sandbox.sh service

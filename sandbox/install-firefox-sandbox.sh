@@ -3,10 +3,12 @@ cd "$(dirname "$0")"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 # OPTIONS: 
-#    force - 	 Force deploy config files and softlink
-#    reinstall - Force deploy config files and softlink
-#    undo - 	 Undo the softlink install
-#    uninstall - Uninstalls
+#    force 	- Force deploy config files and softlink
+#    reinstall 	- Force deploy config files and softlink
+#    service 	- Installs service file
+#    undo 	- Undo the softlink install
+#    uninstall 	- Uninstalls
+#    uninstall-package - Uninstalls *Used by package manager*
 
 EXE_DIR=/sandbox
 CONFIG_DIR=.
@@ -169,20 +171,30 @@ function LINK {
 function UNLINK {
         echo " unLinking..."
 	unlink $LAUNCHER_FILE
-	rm $LAUNCHER_FILE
 	chattr -i $LAUNCHER_FILE
         cp $EXE_DIR/$FIREJAIL_APP_LAUNCHER_FILE $LAUNCHER_FILE
-        ls -al $LAUNCHER_FILE
+        chmod 755 $LAUNCHER_FILE
+	ls -al $LAUNCHER_FILE
 	systemctl stop $SERVICE_NAME
 }
 
 function UNINSTALL {
         UNLINK
-        rm -rf $EXE_DIR
         systemctl disable $SERVICE_NAME
 	systemctl stop $SERVICE_NAME
 	rm /etc/systemd/system/$SERVICE_NAME
 	systemctl daemon-reload
+	systemctl stop $SERVICE_NAME
+	rm -rf $EXE_DIR
+}
+
+function UNINSTALL-PACKAGE {
+        UNLINK
+        systemctl disable $SERVICE_NAME
+        systemctl stop $SERVICE_NAME
+        rm /etc/systemd/system/$SERVICE_NAME
+        systemctl daemon-reload
+	systemctl stop $SERVICE_NAME
 }
 
 if [ ! -z "$1" ];then
@@ -204,6 +216,9 @@ if [ ! -z "$1" ];then
 	elif [ "$1" == uninstall ];then
                 UNINSTALL
 		exit
+	elif [ "$1" == service ];then
+                DEPLOY_SERVICE
+                exit
 	fi
 	exit
 fi

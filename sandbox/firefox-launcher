@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# if this isn't in the environment, firefox will forget it's the default browser
+export MOZ_APP_LAUNCHER=/usr/bin/firefox
+exec /usr/lib/firefox/firefox "$@"
