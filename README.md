@@ -14,6 +14,15 @@ Firejail can be found in your local software center or https://sourceforge.net/p
 At this time Ubuntu/Mint is only tested to be supported. There may only be little work to make it RHEL/Rocky/Yum/DNF supported, please feedback if wanted. 
 This will not work for App Images or Flatpak installs. If there is interest in other Linux flavors/families please let me know. 
 
+# INSTALL
+Build DEB Install file:
+	./build
+	Install the outputted .deb file.
+
+Install without Package Manager:
+	sandbox/install-firefox-sandbox.sh install
+	sandbox/install-firefox-sandbox.sh install-service
+
 # Overview of Data Flow
 Runs from /sandbox where firefox.profile and firefox-jail.py lives. 
 The firefox-launcher in /sandbox is the orginal 'firefox' command script that comes with the firefox package from mozilla. This is moved to /sandbox and renamed from /usr/bin/firefox.

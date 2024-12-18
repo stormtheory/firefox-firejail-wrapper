@@ -3,11 +3,12 @@ cd "$(dirname "$0")"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 # OPTIONS: 
-#    force 	- Force deploy config files and softlink
-#    reinstall 	- Force deploy config files and softlink
-#    service 	- Installs service file
-#    undo 	- Undo the softlink install
-#    uninstall 	- Uninstalls
+#    force 		- Force deploy config files and softlink
+#    reinstall 		- Force deploy config files and softlink
+#    service 		- Installs service file
+#    install-service 	- Installs service file
+#    undo 		- Undo the softlink install
+#    uninstall 		- Uninstalls
 #    uninstall-package - Uninstalls *Used by package manager*
 
 EXE_DIR=/sandbox
@@ -219,8 +220,13 @@ if [ ! -z "$1" ];then
 	elif [ "$1" == service ];then
                 DEPLOY_SERVICE
                 exit
+	elif [ "$1" == install-service ];then
+                DEPLOY_SERVICE
+                exit
+	elif [ "$1" == install ];then
+                DEPLOY
+		##NO EXIT - Links Below
 	fi
-	exit
 fi
 
 
