@@ -4,15 +4,17 @@ cd "$(dirname "$0")"
 APP_NAME='firejail-wrapper_'
 CONTROL_PATH=$(find ./ -name 'control')
 VERS=$(grep 'Version:' $CONTROL_PATH|awk '{print $2}')
+DIR_NAME=$(echo "$APP_NAME$VERS"_arch)
 
 echo "Version: $VERS"
+echo "$DIR_NAME"
 
-mkdir ./$APP_NAME$VERS
+mkdir ./$DIR_NAME
 
-if [ -d ./$APP_NAME$VERS ];then
-	mv DEBIAN  etc  sandbox ./$APP_NAME$VERS
+if [ -d ./$DIR_NAME ];then
+	mv DEBIAN  etc  sandbox ./$DIR_NAME
 
-	dpkg-deb --build ./$APP_NAME$VERS_arch
+	dpkg-deb --build ./$DIR_NAME
 else
-	echo "ERROR: ./$APP_NAME$VERS_arch wasn't found..."
+	echo "ERROR: ./$DIR_NAME wasn't found..."
 fi
