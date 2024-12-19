@@ -1,11 +1,14 @@
 Package: firejail-firefox-wrapper
 Name: firejail-firefox-wrapper
-Description: Wrapper for firejail for the purpose of sandboxing the Mozilla Firefox browser. This wrapper allows for seamless intergration of the sandbox and your computer environment. All firefox commands get intercepted by the python script and then creates a sandbox for firefox with provided options.
 Author: github.com/StormTheory
-Maintainer: github.com/StormTheory
-Website: https://github.com/StormTheory
+Maintainer: StormTheory <stormtheory42@protonmail.com>
+Website: https://github.com/StormTheory/firefox-firejail-wrapper
+Homepage: https://github.com/StormTheory/firefox-firejail-wrapper
+Installed-Size: 108 
 Version: 241218-1
+Depends: firejail (>= 0.9.72),firefox,bash,python3
 Architecture: all
+Section: admin
 Essential: no
 Priority: optional
-Depends: firejail (>= 0.9.72),firefox,bash,python3
+Description: Wrapper for firejail for the purpose of sandboxing the Mozilla Firefox browser. This wrapper allows for seamless intergration of the sandbox and your computer environment. All firefox commands get intercepted by the python script and then creates a sandbox for firefox with provided options. Project Website: https://github.com/StormTheory/firefox-firejail-wrapper
