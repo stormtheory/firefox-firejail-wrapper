@@ -1,6 +1,5 @@
 #!/usr/bin/bash
 cd "$(dirname "$0")"
-PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 # OPTIONS: 
 #    force 		- Force deploy config files and softlink

@@ -59,10 +59,11 @@ parser.add_argument("-d", "--debug", action='store_true', help='Run wrapper in d
 parser.add_argument("-u", "--unbox", action='store_true', help='Run firefox without a sandbox')
 parser.add_argument("-l", "--list", action='store_true', help='Run firejail command to list sandboxes')
 parser.add_argument("-j", "--join", action='store_true', help='Run firejail command to join the sandbox in a shell terminal')
+parser.add_argument("--private", action='store_true', help='Run firejail command option. Mount new /root and /home/user directories in temporary filesystems. All modifications are discarded when the sandbox is closed.')
 parser.add_argument("--cac", action='store_true', help='Run firefox to allow for CAC Readers in a sandbox')
 parser.add_argument("--drm", action='store_true', help='Run firefox to allow for DRM to run for sites like Netflix or Disney+ in a sandbox')
-parser.add_argument("--new-window", help='Firefox command to open in new window')
-parser.add_argument("--new-tab", help='Firefox command to open in new tab')
+parser.add_argument("--new-window", help='Firefox command to open URL in new window')
+parser.add_argument("--new-tab", help='Firefox command to open URL in new tab')
 parser.add_argument("--private-window", action='store_true', help='<url> Open <url> in a new private window.')
 parser.add_argument("address", nargs='?')
 args = parser.parse_args()
@@ -77,11 +78,17 @@ else:
 logger = logging.getLogger()
 logger.setLevel(lLevel)
 
-def SECURE(address):
-    if address is None:
-        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER], shell=True)
-    else:
-        subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER + ' ' + address], shell=True)
+def SECURE(options_address):
+    if args.private:
+        if options_address is None:
+            subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --private' + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER], shell=True)
+        else:
+            subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --private' + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER + ' ' + options_address], shell=True)
+    else:    
+        if options_address is None:
+            subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER], shell=True)
+        else:
+            subprocess.run(['firejail --name=' + SANDBOX_NAME + ' ' + DEFAULT_FIREJAIL_OPTIONS + ' --profile=' + PROFILE + ' ' + FIREFOX_LAUNCHER + ' ' + options_address], shell=True)
 
 def CLOSE():
     global EXIT_PYTHON
