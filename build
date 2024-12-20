@@ -9,12 +9,20 @@ DIR_NAME=$(echo "$APP_NAME$VERS"_arch)
 echo "Version: $VERS"
 echo "$DIR_NAME"
 
-mkdir ./$DIR_NAME
 
-if [ -d ./$DIR_NAME ];then
-	mv DEBIAN  etc  sandbox ./$DIR_NAME
+if [ -z "$1" ];then
+	if [ ! -d $DIR_NAME ];then
+		mkdir ./$DIR_NAME
+	fi
 
-	dpkg-deb --build ./$DIR_NAME
-else
-	echo "ERROR: ./$DIR_NAME wasn't found..."
+	if [ -d ./$DIR_NAME ];then
+		mv DEBIAN  etc  sandbox ./$DIR_NAME
+
+		dpkg-deb --build ./$DIR_NAME
+	else
+		echo "ERROR: ./$DIR_NAME wasn't found..."
+	fi
+elif [ "$1" == undo ];then
+	mv $DIR_NAME/* .
 fi
+
