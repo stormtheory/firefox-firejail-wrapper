@@ -13,7 +13,7 @@ cd "$(dirname "$0")"
 EXE_DIR=/sandbox
 CONFIG_DIR=.
 LAUNCHER_FILE=/usr/bin/firefox
-SERVICE_NAME=wrapper-firefox.service
+SERVICE_NAME=firejail-wrapper.service
 
 FIREJAIL_APP_LAUNCHER_FILE=firefox-launcher
 FIREJAIL_PYTHON_WRAPPER=firefox-jail.py

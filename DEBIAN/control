@@ -5,7 +5,7 @@ Maintainer: StormTheory <stormtheory42@protonmail.com>
 Website: https://github.com/StormTheory/firefox-firejail-wrapper
 Homepage: https://github.com/StormTheory/firefox-firejail-wrapper
 Installed-Size: 108 
-Version: 241220-1
+Version: 241222-1
 Depends: firejail (>= 0.9.72),firefox,bash,python3
 Architecture: all
 Section: admin
