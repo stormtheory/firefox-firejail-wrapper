@@ -34,13 +34,13 @@ At this time Ubuntu/Mint is only tested to be supported, but should work on RHEL
 
         ./build
 
-        Install the outputted .deb file.
+   	Install the outputted .deb file.
 
 3) Install without Package Manager, run commands:
 
-        Download the zip file of the code, off of Github. This is found under the [<> Code] button on https://github.com/stormtheory/firefox-firejail-wrapper.
+	Download the zip file of the code, off of Github. This is found under the [<> Code] button on https://github.com/stormtheory/firefox-firejail-wrapper.
 
-        Extract directory from the zip file. Run the following commands within the directory.
+	Extract directory from the zip file. Run the following commands within the directory.
 
         sandbox/install-firefox-sandbox.sh install
 
