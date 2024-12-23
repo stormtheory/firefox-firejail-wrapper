@@ -24,5 +24,6 @@ if [ -z "$1" ];then
 	fi
 elif [ "$1" == undo ];then
 	mv $DIR_NAME/* .
+	rm -r $DIR_NAME
 fi
 
