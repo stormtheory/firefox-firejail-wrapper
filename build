@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 cd "$(dirname "$0")"
 
-APP_NAME='firejail-wrapper_'
+APP_NAME='firejail-firefox-wrapper_'
 CONTROL_PATH=$(find ./ -name 'control')
 VERS=$(grep 'Version:' $CONTROL_PATH|awk '{print $2}')
 DIR_NAME=$(echo "$APP_NAME$VERS"_arch)
@@ -26,4 +26,3 @@ elif [ "$1" == undo ];then
 	mv $DIR_NAME/* .
 	rm -r $DIR_NAME
 fi
-
