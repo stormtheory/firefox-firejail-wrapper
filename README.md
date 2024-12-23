@@ -22,17 +22,25 @@ As always, let us know if there is something more needed.
 In order to use this, firejail-0.9.72 or better must be installed. Tested with firejail-0.9.72.
 Firejail can be found in your local software center or https://sourceforge.net/projects/firejail/
 
-At this time Ubuntu/Mint is only tested to be supported, but should work on RHEL/Rocky, no Yum/DNF package support yet. Please feedback if want YUM/DNF .rpm package. This will not work for App Images or Flatpak installs. If there is interest in other Linux flavors/families please let me know or it's just a project for me and my family :P as our daily drivers. 
+At this time Ubuntu/Mint is only tested to be supported, but should work on RHEL/Rocky/CentOS, no Yum/DNF package support yet. Please feedback if you want a YUM/DNF .rpm package. This will not work for App Images or Flatpak(already sandboxed) installs of firefox. If there is interest in other Linux flavors/families please let me know or it's just a project for me and my family :P as our daily drivers. 
 
 # INSTALL
 1) Download the latest released .deb package file off of github and install on your system.
 2) Build DEB Install file:
+	
+	Download the zip file of the code, off of Github. This is found under the [<> Code] button on https://github.com/stormtheory/firefox-firejail-wrapper.
+	
+	Extract directory from the zip file. Run the build script in the directory. 
 
         ./build
 
         Install the outputted .deb file.
 
 3) Install without Package Manager, run commands:
+
+        Download the zip file of the code, off of Github. This is found under the [<> Code] button on https://github.com/stormtheory/firefox-firejail-wrapper.
+
+        Extract directory from the zip file. Run the following commands within the directory.
 
         sandbox/install-firefox-sandbox.sh install
 
