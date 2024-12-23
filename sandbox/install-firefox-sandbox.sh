@@ -96,7 +96,7 @@ function DEPLOY {
 }
 
 function DEPLOY_SERVICE {
-	## Deploy Service
+	echo "Deploying Service"
 	if [ ! -f /etc/systemd/system/$SERVICE_NAME ];then
 echo "[Unit]
 Description=--App Wrapper/Sandbox Service--
@@ -115,6 +115,7 @@ RemainAfterExit=no
 WantedBy=multi-user.target" > /etc/systemd/system/$SERVICE_NAME
 		chmod 644 /etc/systemd/system/$SERVICE_NAME
 		systemctl daemon-reload
+		sleep 2
 		systemctl enable $SERVICE_NAME
 	fi
 	timeout 5 systemctl restart $SERVICE_NAME
