@@ -13,7 +13,7 @@ cd "$(dirname "$0")"
 EXE_DIR=/sandbox
 CONFIG_DIR=.
 LAUNCHER_FILE=/usr/bin/firefox
-SERVICE_NAME=wrapper-firefox.service
+SERVICE_NAME=firejail-wrapper.service
 
 FIREJAIL_APP_LAUNCHER_FILE=firefox-launcher
 FIREJAIL_PYTHON_WRAPPER=firefox-jail.py
@@ -96,7 +96,7 @@ function DEPLOY {
 }
 
 function DEPLOY_SERVICE {
-	## Deploy Service
+	echo "Deploying Service"
 	if [ ! -f /etc/systemd/system/$SERVICE_NAME ];then
 echo "[Unit]
 Description=--App Wrapper/Sandbox Service--
@@ -115,6 +115,7 @@ RemainAfterExit=no
 WantedBy=multi-user.target" > /etc/systemd/system/$SERVICE_NAME
 		chmod 644 /etc/systemd/system/$SERVICE_NAME
 		systemctl daemon-reload
+		sleep 2
 		systemctl enable $SERVICE_NAME
 	fi
 	timeout 5 systemctl restart $SERVICE_NAME

@@ -3,7 +3,7 @@
 EXE_DIR=/opt/sandbox
 LAUNCHER_FILE=/usr/bin/firefox
 FIREJAIL_APP_LAUNCHER_FILE=firefox-launcher
-SERVICE_NAME=wrapper-firefox.service
+SERVICE_NAME=firejail-wrapper.service
 
 echo "Unlinking"
 unlink $LAUNCHER_FILE
