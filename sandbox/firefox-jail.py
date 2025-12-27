@@ -94,7 +94,7 @@ def CLOSE():
     global EXIT_PYTHON
     EXIT_PYTHON = 'TRUE'
     print('Application Closing...')
-    sys.exit
+    sys.exit()
 
 #### VERSION INFO
 if args.version:
@@ -172,20 +172,20 @@ else:
     ## If not registered the with firejail, the pythan will pkill the application.
     def Sandbox_Validator ():
         if args.unbox:
-            sys.exit
-        # EXIT_CHECK() - Extra code needed for when a looping check is needed.
-        def EXIT_CHECK():
-            if 'EXIT_PYTHON' in globals():
-                logging.debug('Exiting Validator')
-                sys.exit()
+            sys.exit()
+        # Wait time to start test.
         time.sleep(2)
         while True:
             FIREJAIL_LIST_CODE = subprocess.run(["firejail --list|grep -q {}".format(SANDBOX_NAME)], shell=True).returncode
             logging.debug(FIREJAIL_LIST_CODE)
             if FIREJAIL_LIST_CODE is not int('0'):
                 print(bcolors.RED + 'ERROR: Sandboxing issue... Exiting' + bcolors.NC)
-                subprocess.run(["pkill -f {}".format(FIREFOX_LAUNCHER)], shell=True)
-                print(bcolors.YELLOW + 'Safed' + bcolors.NC)
+                # Kill entire firejail process group safely
+                try:
+                    subprocess.run(["pkill", "-TERM", "-g", str(os.getpgid(os.getpid()))],check=False)
+                    print(bcolors.YELLOW + 'Safed' + bcolors.NC)
+                except Exception as e:
+                    logging.debug(e)
                 sys.exit()
             logging.debug('Sandbox is registered, exiting Validator')
             sys.exit()
