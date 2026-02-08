@@ -48,6 +48,12 @@ ignore noexec ${HOME}
 # noexec ${RUNUSER} breaks DRM binaries when using profile-sync-daemon.
 #?BROWSER_ALLOW_DRM: ignore noexec ${RUNUSER}
 ignore noexec ${RUNUSER}
+
+## Changed 19JAN2025 - They must have moved the config location for newer installs.
+mkdir ${HOME}/.config/mozilla
+whitelist ${HOME}/.config/mozilla
+whitelist ${HOME}/.local/share/ice/firefox
+
 ###################################### END #########################################
 
 noblacklist ${HOME}/.cache/mozilla
